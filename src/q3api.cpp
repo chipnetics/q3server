@@ -13,7 +13,7 @@ using json = nlohmann::json;
 
 #define SERVER_IP "192.241.238.177"
 #define SERVER_PORT 27950
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 4096
 #define UDP_TIMEOUT_SECS 1
 #define MAX_THREADS 10
 #define LISTEN_PORT 80
@@ -211,7 +211,8 @@ std::vector<std::string> getUdpServers()
     }
 
     buffer[n] = '\0';
-    std::vector<std::pair<std::string, int>> addresses = get_ip_port(buffer);
+    std::string packet(buffer, n); // Convert the buffer to a string
+    std::vector<std::pair<std::string, int>> addresses = get_ip_port(packet);
     std::cout << "Number of addresses: " << addresses.size() << std::endl;
 
     // Partition the addresses into MAX_THREADS

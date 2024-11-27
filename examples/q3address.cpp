@@ -7,7 +7,7 @@
 
 #define SERVER_IP "192.241.238.177"
 #define SERVER_PORT 27950
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 4096
 
 std::vector<std::pair<std::string, int>> get_ip_port(const std::string &packet)
 {
@@ -64,10 +64,11 @@ int main()
         close(sockfd);
         return 1;
     }
-    std::cout << "Message sent to server: \"" << message << "\"" << std::endl;
 
     socklen_t server_addr_len = sizeof(server_addr);
     int n = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (sockaddr *)&server_addr, &server_addr_len);
+    std::cout << "Received " << n << " bytes" << std::endl;
+
     if (n < 0)
     {
         perror("Receive failed");
@@ -75,12 +76,15 @@ int main()
     else
     {
         buffer[n] = '\0';
-        std::vector<std::pair<std::string, int>> addresses = get_ip_port(buffer);
+        std::string packet(buffer, n); // Convert char array to string
+        std::vector<std::pair<std::string, int>> addresses = get_ip_port(packet);
 
-        for (const auto &address : addresses)
-        {
-            std::cout << "IP: " << address.first << ", Port: " << address.second << std::endl;
-        }
+        std::cout << "Number of addresses: " << addresses.size() << std::endl;
+
+        // for (const auto &address : addresses)
+        // {
+        //     std::cout << "IP: " << address.first << ", Port: " << address.second << std::endl;
+        // }
     }
 
     close(sockfd);
